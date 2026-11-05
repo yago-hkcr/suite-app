@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   FileSpreadsheet,
@@ -10,6 +10,7 @@ import {
   X,
   HardDrive,
   ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 import { AppId } from './types';
 import { DashboardOverview } from './components/dashboard/DashboardOverview';
@@ -18,10 +19,23 @@ import { DocumentApp } from './components/docs/DocumentApp';
 import { DatabaseApp } from './components/database/DatabaseApp';
 import { CodeEditorApp } from './components/code/CodeEditorApp';
 import { PaintApp } from './components/paint/PaintApp';
+import { Assistant } from './components/Assistant';
 
-export default function App() {
+export default function App({ userEmail, onSignOut }: { userEmail: string; onSignOut: () => void }) {
   const [activeApp, setActiveApp] = useState<AppId>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const apply = (event: Event) => {
+      const action = (event as CustomEvent).detail;
+      const app = action?.type === 'spreadsheet' ? 'spreadsheet' : action?.type === 'document' ? 'documents' : null;
+      if (!app) return;
+      setActiveApp(app);
+      window.setTimeout(() => window.dispatchEvent(new CustomEvent('suite:apply-ai-action', { detail: action })), 180);
+    };
+    window.addEventListener('suite:ai-action', apply);
+    return () => window.removeEventListener('suite:ai-action', apply);
+  }, []);
 
   const navigationItems = [
     {
@@ -149,9 +163,8 @@ export default function App() {
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span className="text-[11px] leading-tight">Armazenamento local persistente</span>
           </div>
-          <div className="text-[10px] text-slate-600">
-            Versão 2026.1 · Sem servidores externos
-          </div>
+          <div className="min-w-0 truncate text-[10px] text-slate-500" title={userEmail}>{userEmail}</div>
+          <button onClick={onSignOut} className="flex items-center gap-2 text-[11px] text-slate-400 hover:text-white"><LogOut className="h-3.5 w-3.5"/> Sair da conta</button>
         </div>
       </aside>
 
@@ -172,6 +185,7 @@ export default function App() {
         {activeApp === 'code' && <CodeEditorApp />}
         {activeApp === 'paint' && <PaintApp />}
       </main>
+      <Assistant />
     </div>
   );
 }

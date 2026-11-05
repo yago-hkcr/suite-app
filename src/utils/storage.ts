@@ -2,11 +2,18 @@
  * Local storage manager with auto-save support for Suíte app's
  */
 
+import { getStorageUser, supabase } from './supabase';
+
 const STORAGE_PREFIX = 'suite_apps_';
+
+function storageKey(key: string) {
+  const userId = getStorageUser();
+  return `${STORAGE_PREFIX}${userId ? `${userId}_` : 'guest_'}${key}`;
+}
 
 export function loadFromStorage<T>(key: string, defaultValue: T): T {
   try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
+    const raw = localStorage.getItem(storageKey(key));
     if (raw === null) return defaultValue;
     return JSON.parse(raw) as T;
   } catch (err) {
@@ -17,7 +24,12 @@ export function loadFromStorage<T>(key: string, defaultValue: T): T {
 
 export function saveToStorage<T>(key: string, value: T): boolean {
   try {
-    localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(value));
+    const serialized = JSON.stringify(value);
+    localStorage.setItem(storageKey(key), serialized);
+    const userId = getStorageUser();
+    if (userId && supabase) {
+      void supabase.from('app_data').upsert({ user_id: userId, storage_key: key, value, updated_at: new Date().toISOString() }, { onConflict: 'user_id,storage_key' });
+    }
     return true;
   } catch (err) {
     console.error(`Error saving to storage: ${key}`, err);
@@ -27,7 +39,9 @@ export function saveToStorage<T>(key: string, value: T): boolean {
 
 export function removeFromStorage(key: string): void {
   try {
-    localStorage.removeItem(`${STORAGE_PREFIX}${key}`);
+    localStorage.removeItem(storageKey(key));
+    const userId = getStorageUser();
+    if (userId && supabase) void supabase.from('app_data').delete().eq('user_id', userId).eq('storage_key', key);
   } catch (err) {
     console.error(`Error removing from storage: ${key}`, err);
   }
@@ -38,11 +52,11 @@ export function exportEntireSuiteBackup(): string {
   const data: Record<string, unknown> = {};
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith(STORAGE_PREFIX)) {
+    if (key && key.startsWith(`${STORAGE_PREFIX}${getStorageUser() ? `${getStorageUser()}_` : 'guest_'}`)) {
       try {
-        data[key.replace(STORAGE_PREFIX, '')] = JSON.parse(localStorage.getItem(key) || 'null');
+        data[key.slice(storageKey('').length)] = JSON.parse(localStorage.getItem(key) || 'null');
       } catch {
-        data[key.replace(STORAGE_PREFIX, '')] = localStorage.getItem(key);
+        data[key.slice(storageKey('').length)] = localStorage.getItem(key);
       }
     }
   }
@@ -63,7 +77,7 @@ export function importEntireSuiteBackup(jsonContent: string): boolean {
     }
     const dataObj = parsed.data as Record<string, unknown>;
     for (const [k, v] of Object.entries(dataObj)) {
-      localStorage.setItem(`${STORAGE_PREFIX}${k}`, JSON.stringify(v));
+      saveToStorage(k, v);
     }
     return true;
   } catch (err) {
@@ -77,7 +91,7 @@ export function getStorageUsage(): { usedKb: number; percent: number } {
   let totalBytes = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith(STORAGE_PREFIX)) {
+    if (key && key.startsWith(`${STORAGE_PREFIX}${getStorageUser() ? `${getStorageUser()}_` : 'guest_'}`)) {
       totalBytes += (key.length + (localStorage.getItem(key)?.length || 0)) * 2;
     }
   }

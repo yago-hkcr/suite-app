@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Document as WordDocument, HeadingLevel, Packer, Paragraph } from 'docx';
 import {
   FileText,
   Bold,
@@ -192,6 +193,28 @@ export const DocumentApp: React.FC = () => {
     return () => clearTimeout(timer);
   }, [docs]);
 
+  useEffect(() => {
+    const applyAiDocument = (event: Event) => {
+      const action = (event as CustomEvent<{ title?: string; content?: string }>).detail;
+      if (!action?.content) return;
+      const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const contentHtml = action.content.split(/\r?\n/).map((line) => {
+        const value = escapeHtml(line.trim());
+        if (!value) return '<p><br></p>';
+        if (value.startsWith('### ')) return `<h3>${value.slice(4)}</h3>`;
+        if (value.startsWith('## ')) return `<h2>${value.slice(3)}</h2>`;
+        if (value.startsWith('# ')) return `<h1>${value.slice(2)}</h1>`;
+        if (/^[-*] /.test(value)) return `<p>• ${value.slice(2)}</p>`;
+        return `<p>${value}</p>`;
+      }).join('');
+      const id = `doc-${Date.now()}`;
+      setDocs((prev) => [...prev, { id, title: action.title || 'Documento criado pela IA', contentHtml, updatedAt: Date.now() }]);
+      setActiveDocId(id);
+    };
+    window.addEventListener('suite:apply-ai-action', applyAiDocument);
+    return () => window.removeEventListener('suite:apply-ai-action', applyAiDocument);
+  }, []);
+
   const updateCounts = (text: string) => {
     const trimmed = text.trim();
     const words = trimmed ? trimmed.split(/\s+/).length : 0;
@@ -359,6 +382,27 @@ export const DocumentApp: React.FC = () => {
     a.href = url;
     a.download = `${activeDoc.title.toLowerCase().replace(/\s+/g, '_')}.txt`;
     a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportWord = async () => {
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(activeDoc.contentHtml, 'text/html');
+    const paragraphs = Array.from(parsed.body.querySelectorAll('h1,h2,h3,p,li,blockquote,pre'))
+      .map((node) => {
+        const text = node.textContent?.trim() || '';
+        const tag = node.tagName.toLowerCase();
+        if (!text) return new Paragraph({ text: '' });
+        if (tag === 'h1') return new Paragraph({ text, heading: HeadingLevel.HEADING_1 });
+        if (tag === 'h2') return new Paragraph({ text, heading: HeadingLevel.HEADING_2 });
+        if (tag === 'h3') return new Paragraph({ text, heading: HeadingLevel.HEADING_3 });
+        if (tag === 'li') return new Paragraph({ text: `• ${text}` });
+        return new Paragraph({ text });
+      });
+    const doc = new WordDocument({ sections: [{ children: [new Paragraph({ text: activeDoc.title, heading: HeadingLevel.TITLE }), ...paragraphs] }] });
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a'); link.href = url; link.download = `${activeDoc.title.toLowerCase().replace(/[^a-z0-9]+/gi, '_')}.docx`; link.click();
     URL.revokeObjectURL(url);
   };
 
@@ -554,6 +598,15 @@ export const DocumentApp: React.FC = () => {
           >
             <Download className="w-3.5 h-3.5" />
             <span>HTML</span>
+          </button>
+
+          <button
+            onClick={handleExportWord}
+            className="px-2.5 py-1.5 text-xs font-medium text-blue-300 hover:text-white bg-blue-950/40 hover:bg-blue-900/40 border border-blue-500/30 rounded-lg flex items-center gap-1.5"
+            title="Baixar documento no formato Microsoft Word"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            <span>Word</span>
           </button>
 
           <button

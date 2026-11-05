@@ -141,6 +141,24 @@ export const SpreadsheetApp: React.FC = () => {
   const [saveStatus, setSaveStatus] = useState<string>('Salvo');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const applyAiSheet = (event: Event) => {
+      const action = (event as CustomEvent<{ title?: string; headers?: string[]; rows?: unknown[][] }>).detail;
+      if (!action?.headers?.length) return;
+      const headers = action.headers.slice(0, 26);
+      const rows = (action.rows || []).slice(0, 500);
+      const column = (index: number) => { let n=index+1, out=''; while(n>0){const rem=(n-1)%26;out=String.fromCharCode(65+rem)+out;n=Math.floor((n-1)/26);}return out; };
+      const grid: SheetGrid = {};
+      headers.forEach((value, col) => { grid[`${column(col)}1`] = { raw: String(value ?? '') , format: { bold: true } }; });
+      rows.forEach((row, rowIndex) => headers.forEach((_, col) => { grid[`${column(col)}${rowIndex+2}`] = { raw: String(row?.[col] ?? '') }; }));
+      const id=`sheet-${Date.now()}`;
+      setSheets((prev) => [...prev, { id, name: action.title || 'Planilha criada pela IA', updatedAt: Date.now(), rowCount: Math.max(DEFAULT_ROWS, rows.length + 1), colCount: Math.max(DEFAULT_COLS, headers.length), grid }]);
+      setActiveSheetId(id);
+    };
+    window.addEventListener('suite:apply-ai-action', applyAiSheet);
+    return () => window.removeEventListener('suite:apply-ai-action', applyAiSheet);
+  }, []);
+
   // Advanced features state: Borders, Search & Replace, Chart
   const [showBordersMenu, setShowBordersMenu] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
