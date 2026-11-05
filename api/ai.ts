@@ -15,7 +15,7 @@ export default async function handler(req: any, res: any) {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
     const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.8-flash',
       contents: `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Quando pedirem código, script ou página web, escolha a linguagem entre javascript, python, html, sql, lua e inclua action {"type":"code","language":"javascript","title":"...","content":"..."}. Para uma consulta SQL ou estrutura de banco, use action {"type":"sql","content":"..."}; ela será colocada no editor para revisão, sem executar automaticamente. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`,
       config: { responseMimeType: 'application/json' },
     });
