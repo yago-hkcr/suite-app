@@ -2,6 +2,22 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    margin: 0;
+  }
+  #root {
+    height: 100%;
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
@@ -9,6 +25,11 @@
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     font-feature-settings: "tnum" 1;
   }
+}
+
+.app-shell {
+  height: 100vh;
+  height: 100dvh;
 }
 
 /* Custom scrollbars for productivity feel */
@@ -202,5 +223,94 @@
     padding: 20mm;
     background: white !important;
     color: black !important;
+  }
+}
+
+@media (max-width: 767px) {
+  html,
+  body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .app-shell,
+  .app-shell main,
+  .database-layout,
+  .database-main,
+  .code-workspace,
+  .code-editor-pane,
+  .code-output-pane {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .database-sidebar {
+    height: 34%;
+    max-height: 34%;
+  }
+
+  .code-output-pane {
+    height: 38%;
+    min-height: 9rem;
+  }
+
+  #printable-document h1,
+  .editor-content h1 {
+    font-size: clamp(1.5rem, 7vw, 2rem) !important;
+    overflow-wrap: anywhere;
+  }
+
+  #printable-document h2,
+  .editor-content h2 {
+    font-size: clamp(1.25rem, 5.5vw, 1.5rem) !important;
+    overflow-wrap: anywhere;
+  }
+
+  #printable-document table,
+  .editor-content table {
+    table-layout: fixed !important;
+  }
+
+  #printable-document th,
+  .editor-content th,
+  #printable-document td,
+  .editor-content td {
+    padding: 6px 7px !important;
+    overflow-wrap: anywhere;
+  }
+
+  .paint-action-scroll,
+  .paint-tool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  .paint-action-scroll::-webkit-scrollbar,
+  .paint-tool-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .paint-action-scroll::-webkit-scrollbar-track,
+  .paint-tool-scroll::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.8);
+  }
+
+  .paint-action-scroll::-webkit-scrollbar-thumb,
+  .paint-tool-scroll::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.75);
+    border-radius: 9999px;
+  }
+
+  .paint-tool-scroll {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .paint-action-scroll > *,
+  .paint-tool-scroll > * {
+    flex-shrink: 0;
   }
 }

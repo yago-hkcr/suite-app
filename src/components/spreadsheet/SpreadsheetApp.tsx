@@ -765,7 +765,7 @@ export const SpreadsheetApp: React.FC = () => {
   const currentFormat = currentCellData.format || {};
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 select-none">
+    <div className="flex flex-col h-full min-h-0 min-w-0 bg-slate-950 text-slate-100 select-none">
       {/* Top Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-2">
@@ -793,7 +793,7 @@ export const SpreadsheetApp: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 max-w-full">
           <input
             type="file"
             ref={fileInputRef}

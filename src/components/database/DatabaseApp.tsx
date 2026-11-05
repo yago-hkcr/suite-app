@@ -383,9 +383,9 @@ export const DatabaseApp: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full bg-slate-950 text-slate-100 select-none">
+    <div className="database-layout flex h-full min-h-0 min-w-0 flex-col md:flex-row bg-slate-950 text-slate-100 select-none">
       {/* Left Sidebar: Schema Explorer & Presets */}
-      <div className="w-64 min-w-64 border-r border-slate-800 bg-slate-900/60 flex flex-col shrink-0">
+      <div className="database-sidebar w-full min-w-0 h-[34%] min-h-48 md:h-auto md:min-h-0 md:w-64 md:min-w-64 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900/60 flex flex-col shrink-0">
         {/* Sidebar Tabs */}
         <div className="flex border-b border-slate-800 text-xs font-semibold shrink-0">
           <button
@@ -567,10 +567,10 @@ export const DatabaseApp: React.FC = () => {
       </div>
 
       {/* Main Query Editor & Results Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="database-main flex-1 min-h-0 flex flex-col min-w-0">
         {/* Editor Box */}
         <div className="p-3 border-b border-slate-800 bg-slate-900/40 flex flex-col shrink-0">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-slate-300">Editor SQL</span>
               <span className="text-[11px] text-slate-500 font-mono">Pressione Ctrl+Enter para executar</span>
@@ -627,15 +627,15 @@ export const DatabaseApp: React.FC = () => {
         </div>
 
         {/* Results Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/60 shrink-0 text-xs">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 md:px-4 py-2 border-b border-slate-800 bg-slate-900/60 shrink-0 text-xs">
+          <div className="flex flex-wrap items-center gap-2 max-w-full">
             <span className="font-semibold text-slate-300">Grade de Resultados</span>
             {filteredResults && (
               <span className="text-slate-500 font-mono">({filteredResults.length} registros)</span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 max-w-full">
             <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-500" />
               <input
@@ -643,7 +643,7 @@ export const DatabaseApp: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Filtrar resultados..."
-                className="pl-8 pr-2.5 py-1 bg-slate-950 border border-slate-800 rounded text-xs text-slate-200 focus:outline-none focus:border-purple-500 w-44 font-sans"
+                className="pl-8 pr-2.5 py-1 bg-slate-950 border border-slate-800 rounded text-xs text-slate-200 focus:outline-none focus:border-purple-500 w-36 sm:w-44 max-w-full font-sans"
               />
             </div>
 

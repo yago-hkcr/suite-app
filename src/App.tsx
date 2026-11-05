@@ -69,7 +69,7 @@ export default function App() {
   ];
 
   return (
-    <div className="flex h-screen w-screen bg-[#0B0F17] text-slate-100 overflow-hidden font-sans">
+    <div className="app-shell flex h-screen w-full min-w-0 bg-[#0B0F17] text-slate-100 overflow-hidden font-sans">
       {/* Mobile Top Bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 z-40">
         <button
@@ -164,7 +164,7 @@ export default function App() {
       )}
 
       {/* Main App Workspace */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden pt-14 md:pt-0">
+      <main className="flex-1 min-w-0 min-h-0 flex flex-col h-full overflow-hidden pt-14 md:pt-0">
         {activeApp === 'dashboard' && <DashboardOverview onSelectApp={setActiveApp} />}
         {activeApp === 'spreadsheet' && <SpreadsheetApp />}
         {activeApp === 'documents' && <DocumentApp />}

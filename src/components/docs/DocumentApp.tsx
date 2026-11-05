@@ -492,7 +492,7 @@ export const DocumentApp: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 select-none">
+    <div className="flex flex-col h-full min-h-0 min-w-0 bg-slate-950 text-slate-100 select-none">
       {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-2">
@@ -511,7 +511,7 @@ export const DocumentApp: React.FC = () => {
               }}
               className="font-semibold text-sm bg-transparent border border-transparent hover:border-slate-700 focus:border-blue-500 rounded px-1.5 py-0.5 text-slate-100 focus:outline-none transition-colors"
             />
-            <div className="text-xs text-slate-500 px-1.5 flex items-center gap-2">
+            <div className="text-xs text-slate-500 px-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span>{saveStatus}</span>
               <span>·</span>
               <span>{wordCount} palavras</span>
@@ -524,7 +524,7 @@ export const DocumentApp: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 max-w-full">
           {/* View mode toggle */}
           <button
             onClick={() => setViewMode(viewMode === 'a4' ? 'full' : 'a4')}
@@ -950,13 +950,13 @@ export const DocumentApp: React.FC = () => {
       )}
 
       {/* Editor Body Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center bg-slate-950/80">
+      <div className="flex-1 min-h-0 min-w-0 overflow-auto p-3 sm:p-4 md:p-8 flex justify-center bg-slate-950/80">
         <div
           id="printable-document"
           className={`w-full transition-all duration-200 ${
             viewMode === 'a4'
-              ? 'max-w-[850px] min-h-[1100px] bg-slate-900 border border-slate-800 shadow-2xl rounded-xl p-10 md:p-14'
-              : 'max-w-5xl min-h-full bg-slate-900/60 border border-slate-800 rounded-xl p-8'
+              ? 'max-w-[850px] min-h-[1100px] bg-slate-900 border border-slate-800 shadow-2xl rounded-xl p-4 sm:p-6 md:p-14'
+              : 'max-w-5xl min-h-full bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 md:p-8'
           }`}
         >
           <div

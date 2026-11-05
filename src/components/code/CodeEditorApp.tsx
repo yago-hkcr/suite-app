@@ -633,9 +633,9 @@ export const CodeEditorApp: React.FC = () => {
       </div>
 
       {/* Editor & Output Split Screen */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="code-workspace flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
         {/* Code Editor Pane */}
-        <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-slate-800 min-w-0">
+        <div className="code-editor-pane flex-1 min-h-0 flex flex-col border-b md:border-b-0 md:border-r border-slate-800 min-w-0">
           <div className="flex items-center justify-between px-4 py-1.5 bg-slate-900/60 border-b border-slate-800 text-xs font-mono text-slate-400">
             <div className="flex items-center gap-3">
               <span>{DEFAULT_SNIPPETS[currentLang].title}</span>
@@ -687,7 +687,7 @@ export const CodeEditorApp: React.FC = () => {
         </div>
 
         {/* Output Pane (Terminal or HTML Live Preview) */}
-        <div className="w-full md:w-[45%] flex flex-col bg-slate-950 shrink-0">
+        <div className="code-output-pane w-full h-[38%] min-h-40 md:h-auto md:w-[45%] flex flex-col bg-slate-950 shrink-0 min-h-0">
           <div className="flex items-center justify-between px-4 py-1.5 bg-slate-900/60 border-b border-slate-800 text-xs font-mono">
             <div className="flex items-center gap-2">
               <TerminalIcon className="w-3.5 h-3.5 text-amber-400" />

@@ -664,7 +664,7 @@ export const PaintApp: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 select-none">
+    <div className="flex flex-col h-full min-h-0 min-w-0 bg-slate-950 text-slate-100 select-none">
       {/* Hidden file input for Image Import */}
       <input
         ref={fileInputRef}
@@ -675,7 +675,7 @@ export const PaintApp: React.FC = () => {
       />
 
       {/* Top Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
             <Paintbrush className="w-4 h-4" />
@@ -691,7 +691,7 @@ export const PaintApp: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="paint-action-scroll flex items-center gap-2 max-w-full">
           {/* Zoom Controls */}
           <div className="flex items-center gap-1 pr-2 border-r border-slate-800">
             <button
@@ -836,7 +836,7 @@ export const PaintApp: React.FC = () => {
       </div>
 
       {/* Tool Selection Ribbon */}
-      <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/50 text-xs shrink-0">
+      <div className="paint-tool-scroll flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2 border-b border-slate-800 bg-slate-900/50 text-xs shrink-0">
         {/* Drawing Tools */}
         <div className="flex items-center gap-1 pr-3 border-r border-slate-800">
           <button
@@ -1076,7 +1076,7 @@ export const PaintApp: React.FC = () => {
       </div>
 
       {/* Canvas Viewport */}
-      <div className="flex-1 overflow-auto p-4 md:p-8 flex items-center justify-center bg-slate-950">
+      <div className="flex-1 min-h-0 min-w-0 overflow-auto p-3 sm:p-4 md:p-8 flex items-center justify-center bg-slate-950">
         <div
           className="relative shadow-2xl rounded-xl border border-slate-700/80 overflow-hidden bg-slate-900 transition-transform duration-150 origin-center"
           style={{ transform: `scale(${zoomLevel / 100})` }}
