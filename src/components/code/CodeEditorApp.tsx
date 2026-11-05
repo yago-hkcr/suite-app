@@ -282,6 +282,19 @@ export const CodeEditorApp: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const applyAiCode = (event: Event) => {
+      const action = (event as CustomEvent<{ language?: Language; content?: string }>).detail;
+      if (!action?.content || !action.language || !Object.prototype.hasOwnProperty.call(DEFAULT_SNIPPETS, action.language)) return;
+      handleLanguageChange(action.language);
+      setCode(action.content);
+      saveToStorage(`code_${action.language}_content`, action.content);
+      setLogs([]);
+    };
+    window.addEventListener('suite:apply-ai-action', applyAiCode);
+    return () => window.removeEventListener('suite:apply-ai-action', applyAiCode);
+  }, [currentLang, code]);
+
   // Auto-save code on change
   useEffect(() => {
     if (isSwitchingLangRef.current) {

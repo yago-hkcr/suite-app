@@ -28,7 +28,10 @@ export default function App({ userEmail, onSignOut }: { userEmail: string; onSig
   useEffect(() => {
     const apply = (event: Event) => {
       const action = (event as CustomEvent).detail;
-      const app = action?.type === 'spreadsheet' ? 'spreadsheet' : action?.type === 'document' ? 'documents' : null;
+      const app = action?.type === 'spreadsheet' ? 'spreadsheet'
+        : action?.type === 'document' ? 'documents'
+        : action?.type === 'code' ? 'code'
+        : action?.type === 'sql' ? 'database' : null;
       if (!app) return;
       setActiveApp(app);
       window.setTimeout(() => window.dispatchEvent(new CustomEvent('suite:apply-ai-action', { detail: action })), 180);

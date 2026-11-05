@@ -16,7 +16,7 @@ export default async function handler(req: any, res: any) {
     const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
     const result = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`,
+      contents: `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Quando pedirem código, script ou página web, escolha a linguagem entre javascript, python, html, sql, lua e inclua action {"type":"code","language":"javascript","title":"...","content":"..."}. Para uma consulta SQL ou estrutura de banco, use action {"type":"sql","content":"..."}; ela será colocada no editor para revisão, sem executar automaticamente. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`,
       config: { responseMimeType: 'application/json' },
     });
     const raw = result.text || '{}';
@@ -28,6 +28,10 @@ export default async function handler(req: any, res: any) {
       const headers = parsed.action.headers.filter((x: unknown) => typeof x === 'string').slice(0, 26);
       const rows = parsed.action.rows.slice(0, 500).filter(Array.isArray).map((row: unknown[]) => row.slice(0, headers.length).map((cell) => String(cell ?? '').slice(0, 500)));
       if (headers.length) action = { type: 'spreadsheet', title: String(parsed.action.title || 'Planilha criada pela IA').slice(0, 120), headers, rows };
+    } else if (parsed.action?.type === 'code' && ['javascript', 'python', 'html', 'sql', 'lua'].includes(parsed.action.language) && typeof parsed.action.content === 'string') {
+      action = { type: 'code', language: parsed.action.language, title: String(parsed.action.title || 'Código criado pela IA').slice(0, 120), content: parsed.action.content.slice(0, 40000) };
+    } else if (parsed.action?.type === 'sql' && typeof parsed.action.content === 'string') {
+      action = { type: 'sql', content: parsed.action.content.slice(0, 12000) };
     }
     return res.status(200).json({ reply: String(parsed.reply || 'Não consegui gerar uma resposta.').slice(0, 12000), action });
   } catch (e) {

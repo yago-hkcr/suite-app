@@ -151,6 +151,15 @@ export const DatabaseApp: React.FC = () => {
     { name: 'nome', type: 'STRING' },
   ]);
 
+  useEffect(() => {
+    const applyAiSql = (event: Event) => {
+      const action = (event as CustomEvent<{ content?: string }>).detail;
+      if (action?.content) setQueryInput(action.content);
+    };
+    window.addEventListener('suite:apply-ai-action', applyAiSql);
+    return () => window.removeEventListener('suite:apply-ai-action', applyAiSql);
+  }, []);
+
   // Initialize DB on component mount
   useEffect(() => {
     initDatabase();

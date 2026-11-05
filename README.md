@@ -11,7 +11,7 @@ Aplicação de produtividade com planilhas, documentos, SQL, editor de código, 
 
 ## Ativar a IA
 
-Crie uma chave no Google AI Studio e salve como `GOOGLE_AI_API_KEY` nas variáveis de ambiente da Vercel. Essa chave só é lida pela função `/api/ai`, nunca pelo navegador. A IA atende perguntas e consegue criar documentos no editor e planilhas no módulo de planilhas. O editor de documentos exporta Word (.docx), HTML, texto e PDF via impressão.
+Crie uma chave no Google AI Studio e salve como `GOOGLE_AI_API_KEY` nas variáveis de ambiente da Vercel. Essa chave só é lida pela função `/api/ai`, nunca pelo navegador. A IA atende perguntas e consegue criar documentos no editor, planilhas, código editável e consultas SQL no módulo de banco de dados. Consultas SQL são colocadas no editor e não são executadas automaticamente. O editor de documentos exporta Word (.docx), HTML, texto e PDF via impressão.
 
 O usuário vê um aviso de privacidade e precisa concordar antes do primeiro pedido. No plano gratuito do Gemini, prompts e respostas podem ser usados pelo Google para melhorar produtos. Consulte os termos e limites atuais do provedor antes de disponibilizar o recurso a outras pessoas.
 
