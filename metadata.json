@@ -1,0 +1,6 @@
+{
+  "name": "Suíte app's",
+  "description": "Suíte de aplicativos tudo-em-um que roda 100% no navegador: Planilhas com fórmulas, Editor de Documentos, Banco de Dados Relacional SQL, Editor de Código e Paint com desenho.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

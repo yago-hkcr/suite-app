@@ -1,0 +1,206 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  code, pre, kbd, samp {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-feature-settings: "tnum" 1;
+  }
+}
+
+/* Custom scrollbars for productivity feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* Document Editor Typography */
+#printable-document h1,
+.editor-content h1 {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+  color: #f8fafc !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+#printable-document h2,
+.editor-content h2 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #f1f5f9 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.35rem;
+}
+
+#printable-document h3,
+.editor-content h3 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #e2e8f0 !important;
+}
+
+#printable-document p,
+.editor-content p {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.7 !important;
+}
+
+#printable-document blockquote,
+.editor-content blockquote {
+  border-left: 4px solid #3b82f6 !important;
+  padding-left: 1rem !important;
+  margin: 1rem 0 !important;
+  color: #94a3b8 !important;
+  font-style: italic !important;
+  background: rgba(59, 130, 246, 0.05);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 0 4px 4px 0;
+}
+
+#printable-document ul,
+.editor-content ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+#printable-document ol,
+.editor-content ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+#printable-document li,
+.editor-content li {
+  margin-bottom: 0.25rem !important;
+}
+
+#printable-document table,
+.editor-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1rem 0 !important;
+}
+
+#printable-document th,
+.editor-content th,
+#printable-document td,
+.editor-content td {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 8px 12px !important;
+}
+
+#printable-document th,
+.editor-content th {
+  background: rgba(255, 255, 255, 0.05) !important;
+  font-weight: 600 !important;
+}
+
+#printable-document a,
+.editor-content a {
+  color: #60a5fa !important;
+  text-decoration: underline !important;
+}
+
+#printable-document img,
+.editor-content img {
+  max-width: 100% !important;
+  border-radius: 8px !important;
+  margin: 1rem 0 !important;
+}
+
+#printable-document hr,
+.editor-content hr {
+  border: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  margin: 1.5rem 0 !important;
+}
+
+#printable-document pre,
+.editor-content pre {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 1rem !important;
+  overflow-x: auto !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.85rem !important;
+  color: #38bdf8 !important;
+  margin: 1rem 0 !important;
+}
+
+#printable-document .task-item,
+.editor-content .task-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin: 0.35rem 0 !important;
+}
+
+#printable-document .task-item input[type="checkbox"],
+.editor-content .task-item input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Custom borders for spreadsheets */
+.cell-border-all {
+  border: 2px solid #64748b !important;
+}
+.cell-border-box {
+  outline: 2px solid #38bdf8 !important;
+}
+.cell-border-bottom-double {
+  border-bottom: 4px double #10b981 !important;
+}
+.cell-border-top-bottom {
+  border-top: 1px solid #94a3b8 !important;
+  border-bottom: 2px solid #94a3b8 !important;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-document, #printable-document * {
+    visibility: visible;
+  }
+  #printable-document {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20mm;
+    background: white !important;
+    color: black !important;
+  }
+}
