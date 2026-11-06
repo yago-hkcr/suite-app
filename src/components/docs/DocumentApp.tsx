@@ -39,6 +39,7 @@ import {
   X,
 } from 'lucide-react';
 import { loadFromStorage, saveToStorage } from '../../utils/storage';
+import { markdownToHtml, repairInlineMarkdownHtml } from '../../utils/markdownToHtml';
 
 interface DocumentFile {
   id: string;
@@ -104,7 +105,8 @@ const DEFAULT_SAMPLE_DOC: DocumentFile = {
 
 export const DocumentApp: React.FC = () => {
   const [docs, setDocs] = useState<DocumentFile[]>(() => {
-    return loadFromStorage<DocumentFile[]>('documents_list', [DEFAULT_SAMPLE_DOC]);
+    const storedDocs = loadFromStorage<DocumentFile[]>('documents_list', [DEFAULT_SAMPLE_DOC]);
+    return storedDocs.map((doc) => ({ ...doc, contentHtml: repairInlineMarkdownHtml(doc.contentHtml) }));
   });
 
   const [activeDocId, setActiveDocId] = useState<string>(docs[0]?.id || 'doc-1');
@@ -197,16 +199,7 @@ export const DocumentApp: React.FC = () => {
     const applyAiDocument = (event: Event) => {
       const action = (event as CustomEvent<{ title?: string; content?: string }>).detail;
       if (!action?.content) return;
-      const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const contentHtml = action.content.split(/\r?\n/).map((line) => {
-        const value = escapeHtml(line.trim());
-        if (!value) return '<p><br></p>';
-        if (value.startsWith('### ')) return `<h3>${value.slice(4)}</h3>`;
-        if (value.startsWith('## ')) return `<h2>${value.slice(3)}</h2>`;
-        if (value.startsWith('# ')) return `<h1>${value.slice(2)}</h1>`;
-        if (/^[-*] /.test(value)) return `<p>• ${value.slice(2)}</p>`;
-        return `<p>${value}</p>`;
-      }).join('');
+      const contentHtml = markdownToHtml(action.content);
       const id = `doc-${Date.now()}`;
       setDocs((prev) => [...prev, { id, title: action.title || 'Documento criado pela IA', contentHtml, updatedAt: Date.now() }]);
       setActiveDocId(id);
