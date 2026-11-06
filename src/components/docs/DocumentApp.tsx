@@ -1013,7 +1013,7 @@ export const DocumentApp: React.FC = () => {
       )}
 
       {/* Editor Body Area */}
-      <div className="flex-1 min-h-0 min-w-0 overflow-auto p-3 sm:p-4 md:p-8 flex justify-center bg-slate-950/80">
+      <div className="flex-1 min-h-0 min-w-0 overflow-auto p-3 sm:p-4 md:p-8 flex items-start justify-center bg-slate-950/80">
         <div
           id="printable-document"
           className={`w-full transition-all duration-200 ${
