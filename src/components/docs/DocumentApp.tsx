@@ -491,16 +491,20 @@ export const DocumentApp: React.FC = () => {
       span.appendChild(sel.getRangeAt(0).extractContents());
       sel.getRangeAt(0).insertNode(span);
     } else {
-      const sizeMap: Record<string, string> = {
-        '12px': '1',
-        '14px': '2',
-        '16px': '3',
-        '18px': '4',
-        '20px': '5',
-        '24px': '6',
-        '32px': '7',
-      };
-      document.execCommand('fontSize', false, sizeMap[size] || '3');
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand('fontSize', false, '7');
+      const caret = window.getSelection()?.anchorNode;
+      const caretElement = caret instanceof Element ? caret : caret?.parentElement;
+      const fontWrapper = caretElement?.closest('font, span[style]') as HTMLElement | null;
+      if (fontWrapper && editorRef.current?.contains(fontWrapper)) {
+        fontWrapper.style.fontSize = size;
+        if (fontWrapper.tagName === 'FONT') {
+          const span = document.createElement('span');
+          span.style.fontSize = size;
+          while (fontWrapper.firstChild) span.appendChild(fontWrapper.firstChild);
+          fontWrapper.replaceWith(span);
+        }
+      }
     }
     handleContentInput();
   };
@@ -679,6 +683,7 @@ export const DocumentApp: React.FC = () => {
           <select
             value={selectedFontSize}
             onChange={(e) => handleFontSizeChange(e.target.value)}
+            onMouseDown={saveSelection}
             className="bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-200 text-xs rounded px-1.5 py-1 outline-none focus:border-blue-500 cursor-pointer"
             title="Tamanho da Fonte"
           >
