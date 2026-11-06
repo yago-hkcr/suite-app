@@ -133,6 +133,23 @@ export const DocumentApp: React.FC = () => {
 
   const activeDoc = docs.find((d) => d.id === activeDocId) || docs[0];
 
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const fitEditorToContent = () => {
+      editor.style.height = 'auto';
+      editor.style.height = editor.scrollHeight + 'px';
+    };
+    const observer = new MutationObserver(fitEditorToContent);
+    observer.observe(editor, { childList: true, characterData: true, subtree: true });
+    window.addEventListener('resize', fitEditorToContent);
+    fitEditorToContent();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', fitEditorToContent);
+    };
+  }, []);
+
   const saveSelection = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
