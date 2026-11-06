@@ -14,11 +14,21 @@ export default async function handler(req: any, res: any) {
   if (!process.env.GOOGLE_AI_API_KEY) return res.status(503).json({ error: 'A IA ainda não foi ativada pelo administrador.' });
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
-    const result = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Quando pedirem código, script ou página web, escolha a linguagem entre javascript, python, html, sql, lua e inclua action {"type":"code","language":"javascript","title":"...","content":"..."}. Para uma consulta SQL ou estrutura de banco, use action {"type":"sql","content":"..."}; ela será colocada no editor para revisão, sem executar automaticamente. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`,
-      config: { responseMimeType: 'application/json' },
-    });
+    const contents = `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Quando pedirem código, script ou página web, escolha a linguagem entre javascript, python, html, sql, lua e inclua action {"type":"code","language":"javascript","title":"...","content":"..."}. Para uma consulta SQL ou estrutura de banco, use action {"type":"sql","content":"..."}; ela será colocada no editor para revisão, sem executar automaticamente. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`;
+    let result;
+    let lastError: any;
+    for (const model of ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.6-flash']) {
+      try {
+        result = await ai.models.generateContent({ model, contents, config: { responseMimeType: 'application/json' } });
+        break;
+      } catch (error: any) {
+        lastError = error;
+        const status = Number(error?.status || error?.code || 0);
+        if (status !== 429 && status < 500) throw error;
+        console.warn(`Gemini model ${model} unavailable (${status || 'unknown'}); trying fallback.`);
+      }
+    }
+    if (!result) throw lastError || new Error('All Gemini models are unavailable.');
     const raw = result.text || '{}';
     const parsed = JSON.parse(raw);
     let action: any = null;
@@ -36,6 +46,8 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({ reply: String(parsed.reply || 'Não consegui gerar uma resposta.').slice(0, 12000), action });
   } catch (e) {
     console.error('AI request failed', e);
-    return res.status(502).json({ error: 'A IA não respondeu agora. Tente novamente em instantes.' });
+    const status = Number((e as any)?.status || (e as any)?.code || 0);
+    if (status === 429 || status >= 500) return res.status(503).json({ error: 'Os modelos de IA estão ocupados agora. Tente novamente em alguns segundos.' });
+    return res.status(502).json({ error: 'Não foi possível gerar a resposta. Tente novamente.' });
   }
 }
