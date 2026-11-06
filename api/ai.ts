@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req: any, res: any) {
@@ -13,13 +13,20 @@ export default async function handler(req: any, res: any) {
   if (!prompt || prompt.length > 12000) return res.status(400).json({ error: 'Escreva um pedido de até 12 mil caracteres.' });
   if (!process.env.GOOGLE_AI_API_KEY) return res.status(503).json({ error: 'A IA ainda não foi ativada pelo administrador.' });
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GOOGLE_AI_API_KEY,
+      httpOptions: { timeout: 12000, retryOptions: { attempts: 1 } },
+    });
     const contents = `Você é o assistente da Suíte app's. Responda sempre em português brasileiro. Entregue resultado útil, direto e correto. Quando pedirem para criar um documento Word/texto/relatório, gere conteúdo com títulos em Markdown e inclua action como {"type":"document","title":"...","content":"..."}. Quando pedirem uma planilha, gere action como {"type":"spreadsheet","title":"...","headers":["..."],"rows":[["..."]]}. Quando pedirem código, script ou página web, escolha a linguagem entre javascript, python, html, sql, lua e inclua action {"type":"code","language":"javascript","title":"...","content":"..."}. Para uma consulta SQL ou estrutura de banco, use action {"type":"sql","content":"..."}; ela será colocada no editor para revisão, sem executar automaticamente. Para pedidos gerais, use action null. Não invente que realizou operações fora do app. Retorne somente JSON válido no formato {"reply":"...","action":null}. Pedido do usuário: ${prompt}`;
     let result;
     let lastError: any;
     for (const model of ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.6-flash']) {
       try {
-        result = await ai.models.generateContent({ model, contents, config: { responseMimeType: 'application/json' } });
+        result = await ai.models.generateContent({
+          model,
+          contents,
+          config: { responseMimeType: 'application/json', thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } },
+        });
         break;
       } catch (error: any) {
         lastError = error;
